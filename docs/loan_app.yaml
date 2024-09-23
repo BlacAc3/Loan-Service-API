@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: Loan Management API
+  version: 1.0.0
+  description: API for managing loans, repayments, and user accounts.
+
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ACEEZEALA/Ace_Loan/1.0.0
+  - url: http://localhost:8000
+    description: Local server
+  - url: https://api.example.com/v1
+    description: Production server
+
+paths:
+  /api/auth/register/:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+
+  /api/auth/login/:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/auth/user/:
+    get:
+      summary: Get authenticated user's profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns the user's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/loans/:
+    get:
+      summary: List all loans for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response with list of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Loan'
+
+    post:
+      summary: Apply for a loan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanRequest'
+      responses:
+        '201':
+          description: Loan application created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+        '400':
+          description: Invalid loan data
+
+  /api/loans/{loan_id}/approve/:
+    post:
+      summary: Approve or reject a loan application (Admin only)
+      parameters:
+        - in: path
+          name: loan_id
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApprovalRequest'
+      responses:
+        '200':
+          description: Loan approved
+        '403':
+          description: Forbidden, admin only
+
+  /api/repayments/{loan_id}/:
+    post:
+      summary: Make a repayment towards a loan
+      parameters:
+        - in: path
+          name: loan_id
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepaymentRequest'
+      responses:
+        '200':
+          description: Repayment processed
+        '400':
+          description: Invalid repayment data
+
+  /api/loans/{loan_id}/schedule/:
+    get:
+      summary: Get the repayment schedule for a loan
+      parameters:
+        - in: path
+          name: loan_id
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Loan repayment schedule returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepaymentSchedule'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+        loan_amount:
+          type: number
+        interest_rate:
+          type: number
+        term_months:
+          type: integer
+        status:
+          type: string
+
+    LoanRequest:
+      type: object
+      properties:
+        loan_amount:
+          type: number
+        interest_rate:
+          type: number
+        term_months:
+          type: integer
+
+    LoanApprovalRequest:
+      type: object
+      properties:
+        status:
+          type: string
+
+    RepaymentRequest:
+      type: object
+      properties:
+        amount_paid:
+          type: number
+
+    RepaymentSchedule:
+      type: object
+      properties:
+        month:
+          type: integer
+        due_date:
+          type: string
+        amount_due:
+          type: number
