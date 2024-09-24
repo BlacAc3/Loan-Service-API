@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Loan
-        fields =["id", "loan_amount", "interest_rate", "term_months", "status", "created_at", "approved_at"]
+        fields =["user", "id", "loan_amount", "interest_rate", "term_months", "status", "created_at", "approved_at"]
 
         # Define fields as optional in extra_kwargs
         extra_kwargs = {

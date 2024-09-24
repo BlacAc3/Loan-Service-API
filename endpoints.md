@@ -260,32 +260,32 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 ### **4. Loan Schedule Endpoint**
 
 #### **4.1 `GET /api/loans/{loan_id}/schedule/`**
-- **Method**: `GET`
-- **Description**: This endpoint provides users with the repayment schedule for a specific loan. The schedule is automatically generated when the loan is approved and shows details such as the amount to be repaid each month and due dates.
-- **Authorization**: Requires a valid JWT token in the request header.
-- **Path Parameter**:
-  - `loan_id`: The ID of the loan for which the schedule is being retrieved.
-- **Response**:
-  - **200 OK**: Returns the repayment schedule details.
-    ```json
-    [
-      {
-        "month": 1,
-        "due_date": "2024-10-01",
-        "amount_due": 850
-      },
-      {
-        "month": 2,
-        "due_date": "2024-11-01",
-        "amount_due": 850
-      },
-      ...
-    ]
-    ```
+    - **Method**: `GET`
+    - **Description**: This endpoint provides users with the repayment schedule for a specific loan. The schedule is automatically generated when the loan is approved and shows details such as the amount to be repaid each month and due dates.
+    - **Authorization**: Requires a valid JWT token in the request header.
+    - **Path Parameter**:
+    - `loan_id`: The ID of the loan for which the schedule is being retrieved.
+    - **Response**:
+        - **200 OK**: Returns the repayment schedule details.
+        ```json
+        [
+          {
+            "month": 1,
+            "due_date": "2024-10-01",
+            "amount_due": 850
+          },
+          {
+            "month": 2,
+            "due_date": "2024-11-01",
+            "amount_due": 850
+          },
+          ...
+        ]
+        ```
 
     ---
 
-    #### **5 `GET /api/auth/user/`**
+#### **5 `GET /api/auth/user/`**
     - **Method**: `GET`
     - **Description**: Retrieves the authenticated user’s profile information.
     - **Authorization**: Requires a valid JWT token in the request header.
@@ -301,9 +301,9 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
     ---
 
-    ### **6. Admin Management Endpoints**
+### **6. Admin Management Endpoints**
 
-    #### **6.1 `GET /api/users/`**
+#### **6.1 `GET /api/users/`**
     - **Method**: `GET`
     - **Description**: Allows admin users to list all registered users. Only accessible by admins.
     - **Authorization**: Requires admin privileges.
@@ -327,7 +327,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
     ---
 
-    #### **6.2 `DELETE /api/users/{user_id}/`**
+#### **6.2 `DELETE /api/users/{user_id}/`**
     - **Method**: `DELETE`
     - **Description**: Allows admin users to delete a specific user from the system.
     - **Authorization**: Requires admin privileges.
@@ -340,7 +340,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
     ---
 
-    ### **7. Error Handling & Production Considerations**
+### **7. Error Handling & Production Considerations**
 
     - **Rate Limiting**: Implement rate limiting for certain endpoints to protect against abuse.
     - **CORS**: Configure Cross-Origin Resource Sharing (CORS) for controlled access.
