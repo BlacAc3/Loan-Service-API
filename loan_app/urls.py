@@ -17,4 +17,5 @@ urlpatterns = [
         "api/loans/<int:loan_id>/approve/", views.ApproveLoan.as_view(), name="approve"
     ),
     path("api/repayments/<int:loan_id>/", views.RepayLoan.as_view(), name="repay"),
+    path("api/loans/<int:loan_id>/schedule/", views.LoanSchedule.as_view(), name="schedule"),
 ]

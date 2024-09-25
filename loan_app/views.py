@@ -13,6 +13,8 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .models import Loan, RepaymentSchedule
 from .serializers import LoanSerializer, RegisterSerializer
+from datetime import datetime 
+from dateutil.relativedelta import relativedelta
 
 
 # Create your views here.
@@ -78,7 +80,6 @@ class RegisterView(APIView):
 # -----------------------------------------------------------------------------
 
 
-
 # Login handling!
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -100,8 +101,9 @@ class LoginView(APIView):
             return Response(
                 {"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
             )
-# -----------------------------------------------------------------------------------
 
+
+# -----------------------------------------------------------------------------------
 
 
 # Logout function Handling
@@ -130,11 +132,12 @@ class LogoutView(APIView):
             return Response(
                 {"detail": "Invalid access token."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
 # -------------------------------------------------------------------------------------
 
 
-
-#Provide list of User Loans and Request for a loan
+# Provide list of User Loans and Request for a loan
 class LoanList(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -150,30 +153,126 @@ class LoanList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#------------------------------------------------------------------------------
 
 
+# ------------------------------------------------------------------------------
 
 
 class ApproveLoan(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request, loan_id):
-        status = request.data["status"].lower()
+        loan_status = request.data["status"].lower()
 
+        if not Loan.objects.filter(id=loan_id).exists():
+            return Response(
+                {"loan_id": f"{loan_id}", "error": "Loan not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         if not Loan.objects.filter(id=loan_id, locked=False).exists():
-            return Response({"Error": f"Loan of id:{loan_id} not found or has been resolved by an Admin!"})
+            return Response(
+                {
+                    "loan_id": f"{loan_id}",
+                    "detail": "This loan has been resolved by Admin",
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
         loan_to_approve = Loan.objects.get(id=loan_id)
-        loan_to_approve.status = status
-        loan_to_approve.save()
-        if status == "approved":
+        if loan_status == "approved":
             loan_to_approve.approve_loan()
-        loan_to_approve.locked=True
-        return Response({"Loan_id": f"{loan_id}", "current_status": f"{status}"})
+        loan_to_approve.locked = True
+        try:
+            loan_to_approve.status = loan_status
+        except:
+            Response({"error": "Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
+        loan_to_approve.save()
+        return Response({"loan_id": f"{loan_id}", "current_status": f"{loan_status}"}, status=status.HTTP_200_OK)
 
 
 class RepayLoan(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, loan_id):
         amount = request.data["amount"]
-        if not Loan.objects.filter(id=loan_id).exists():
-            return Response({"Error": f"Loan of id:{loan_id} not found!"})
+        check_result = CheckLoanOwnershipAndExistence(request, loan_id)
+        if check_result is not None:
+            return check_result
+        loan_to_repay = Loan.objects.get(id=loan_id)
+        loan_schedule = RepaymentSchedule.objects.get(loan=loan_to_repay)
+        
+        if loan_to_repay.status != "approved":
+            return Response(
+                {"loan_id": f"{loan_id}", "detail": "Cannot repay an unapproved loan"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+            
+        loan_schedule.update_repayment(amount)
+        schedule_data = {
+            "loan_id": f"{loan_id}",
+            "amount_paid": f"{amount}",
+            "amount_outstanding":f"{loan_schedule.total_due_amount}",
+            "final_repayment_date": f"{loan_schedule.due_date}",
+        }
+        return Response(schedule_data, status=status.HTTP_200_OK)
+
+class LoanSchedule(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, loan_id):
+        """
+        {
+            "month": 1,
+            "due_date": "2024-10-01",
+            "amount_due": 850
+        }
+        """    
+        check_result = CheckLoanOwnershipAndExistence(request, loan_id)
+        if check_result is not None:
+            return check_result
+        loan = Loan.objects.get(id=loan_id)
+        loan_schedule = RepaymentSchedule.objects.get(loan=loan)
+        result = []
+        for i in range(int(loan_schedule.total_months_for_payment)):
+            i+=1
+            amount_paid = loan_schedule.repay_amount_with_interest - loan_schedule.total_due_amount
+            claimed_amount_due = loan_schedule.expected_monthly_payment*i - amount_paid
+            #if the total amount paid surpasses the total sum expected to be paid in {i} months then no amount is due for that month
+            if amount_paid > loan_schedule.expected_monthly_payment*i:
+                amount_due = 0
+            #if the amount paid becomes less than the sum of all cash expected to be paid in total of {i} months then an amount is due for that month
+            elif amount_paid < loan_schedule.expected_monthly_payment*i and claimed_amount_due<loan_schedule.expected_monthly_payment:
+                amount_due = loan_schedule.expected_monthly_payment*i - amount_paid
+            elif amount_paid == loan_schedule.expected_monthly_payment*i:
+                amount_due=0
+            #when the total amount subtracted from the expected accumulated monthly payment becomes bigger than the payment expected every month
+            #then it means the iteration has passed the point/month in which the user is in owing a certain amount
+            if claimed_amount_due > loan_schedule.expected_monthly_payment:
+                amount_due=loan_schedule.expected_monthly_payment
+            
+            #for each month the due date is the first of the next month
+            next_month = loan.approved_at + relativedelta(months=1)
+            due_date = next_month.replace(day=1)
+
+            data = {
+                    "month":f"{i}",
+                    "due_date":f"{due_date}",
+                    "amount_due":f"{amount_due}"
+                    }
+            result.append(data)
+
+        return Response(result, status=status.HTTP_200_OK)
+
+
+
+def CheckLoanOwnershipAndExistence(request, loan_id):
+    user = get_token_user(request)
+    if not Loan.objects.filter(id=loan_id, user=user).exists():
+        return Response(
+            {"loan_id": f"{loan_id}", "error": "Loan not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    loan = Loan.objects.get(id=loan_id, user=user)
+    if not RepaymentSchedule.objects.filter(loan=loan).exists():
+        return Response({"error": "A server error occured"})
+    
+    return None

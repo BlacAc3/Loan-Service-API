@@ -126,7 +126,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
       {
         "id": 1,
         "loan_amount": 10000,
-        "interest_rate": 5.0,
+        "total_interest": 5.0,
         "term_months": 12,
         "status": "pending",
         "created_at":"2024-09-17T12:00:00Z",
@@ -135,7 +135,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
       {
         "id": 2,
         "loan_amount": 15000,
-        "interest_rate": 4.5,
+        "total_interest": 4.5,
         "term_months": 24,
         "status": "approved",
         "created_at":"2024-09-17T12:00:00Z",
@@ -160,7 +160,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
   ```json
   {
     "loan_amount": 10000,
-    "interest_rate": 5.0,
+    "total_interest": 5.0,
     "term_months": 12
   }
   ```
@@ -170,10 +170,9 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
     {
       "id": 3,
       "loan_amount": 10000,
-      "interest_rate": 5.0,
+      "total_interest": 5.0,
       "term_months": 12,
       "status": "pending",
-      "approved_by": null,
       "approved_at": null
     }
     ```
@@ -198,7 +197,13 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
     "status": "approved"
   }
   ```
-- **Response**:
+    **or**
+  ```
+  {
+    "status":"rejected"
+  }
+  ```
+  - **Response**:
   - **200 OK**: Returns the updated loan details.
     ```json
     {
@@ -207,7 +212,6 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
       "interest_rate": 5.0,
       "term_months": 12,
       "status": "approved",
-      "approved_by": 1,
       "approved_at": "2024-09-17T12:00:00Z"
     }
     ```
@@ -243,7 +247,8 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
       "id": 4,
       "loan_id": 1,
       "amount_paid": 500,
-      "repayment_date": "2024-09-17T15:00:00Z"
+      "amount_outstanding":"1000",
+      "final_repayment_date": "2024-09-17T15:00:00Z"
     }
     ```
   - **400 Bad Request**: If the repayment amount exceeds the remaining balance or there’s a validation error.
