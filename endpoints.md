@@ -233,7 +233,7 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 - **Request Body**:
   ```json
   {
-    "amount_paid": 500
+    "amount": 500
   }
   ```
 - **Response**:

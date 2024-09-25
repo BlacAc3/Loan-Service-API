@@ -11,7 +11,7 @@ from rest_framework_simplejwt import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import Loan
+from .models import Loan, Repayment
 from .serializers import LoanSerializer, RegisterSerializer
 
 
@@ -78,6 +78,7 @@ class RegisterView(APIView):
 # -----------------------------------------------------------------------------
 
 
+
 # Login handling!
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -99,9 +100,8 @@ class LoginView(APIView):
             return Response(
                 {"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
             )
+# -----------------------------------------------------------------------------------
 
-
-# --------------------------------------------------------------------------------------------------
 
 
 # Logout function Handling
@@ -131,11 +131,11 @@ class LogoutView(APIView):
             return Response(
                 {"detail": "Invalid access token."}, status=status.HTTP_400_BAD_REQUEST
             )
+# -------------------------------------------------------------------------------------
 
 
-# ---------------------------------------------------------------------------------------------------------
 
-
+#Provide list of User Loans and Request for a loan
 class LoanList(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -151,6 +151,9 @@ class LoanList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#------------------------------------------------------------------------------
+
+
 
 
 class ApproveLoan(APIView):
@@ -158,10 +161,20 @@ class ApproveLoan(APIView):
 
     def post(self, request, loan_id):
         status = request.data["status"].lower()
-        if not Loan.objects.filter(id=loan_id).exists():
-            return Response({"Error": f"Loan of id:{loan_id} not found!"})
+
+        if not Loan.objects.filter(id=loan_id, locked=False).exists():
+            return Response({"Error": f"Loan of id:{loan_id} not found or has been resolved by an Admin!"})
         loan_to_approve = Loan.objects.get(id=loan_id)
         loan_to_approve.status = status
         loan_to_approve.save()
+        if status == "approved":
+            loan_to_approve.approve_loan()
+        loan_to_approve.locked=True
         return Response({"Loan_id": f"{loan_id}", "current_status": f"{status}"})
 
+
+class RepayLoan(APIView):
+    def post(self, request, loan_id):
+        amount = request.data["amount"]
+        if not Loan.objects.filter(id=loan_id).exists():
+            return Response({"Error": f"Loan of id:{loan_id} not found!"})
