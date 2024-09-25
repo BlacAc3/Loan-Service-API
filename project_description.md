@@ -49,39 +49,6 @@ The Loan Management API is designed to handle loan applications, repayment sched
 
 ### **Database Schema Design:**
 
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(10) CHECK(role IN ('admin', 'borrower')) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE loans (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
-    loan_amount DECIMAL(10, 2) NOT NULL,
-    interest_rate DECIMAL(5, 2) NOT NULL,
-    term_months INT NOT NULL,
-    status VARCHAR(10) CHECK(status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
-    approved_by INT REFERENCES users(id),
-    approved_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE repayments (
-    id SERIAL PRIMARY KEY,
-    loan_id INT REFERENCES loans(id),
-    amount_paid DECIMAL(10, 2) NOT NULL,
-    repayment_date TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-```
 
 ### **OpenAPI Specification (for SwaggerHub)**
 
