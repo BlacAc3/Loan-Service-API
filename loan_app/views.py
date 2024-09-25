@@ -11,7 +11,7 @@ from rest_framework_simplejwt import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from .models import Loan, Repayment
+from .models import Loan, RepaymentSchedule
 from .serializers import LoanSerializer, RegisterSerializer
 
 
@@ -110,7 +110,6 @@ class LogoutView(APIView):
 
     def post(self, request):
         # Get the access token from the request
-        access_token = extract_access_token(request)
         refresh_token = request.data.get("refresh")
         print(refresh_token)
 

@@ -1,5 +1,5 @@
 from dateutil.relativedelta import relativedelta
-from datetime import date, datetime
+from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -17,7 +17,7 @@ class Loan(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loans")
     loan_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    total_interest = models.DecimalField(max_digits=5, decimal_places=2) #Total interest
+    total_interest = models.DecimalField(max_digits=4, decimal_places=2) #Total interest
     term_months = models.PositiveIntegerField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -42,8 +42,8 @@ class Loan(models.Model):
 
 class RepaymentSchedule(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name="repayments")
-    total_due_amount = models.DecimalField()
-    end_of_month_due_amount = models.DecimalField()
+    total_due_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    end_of_month_due_amount = models.DecimalField(max_digits=10, decimal_places=2)
     due_date = models.DateTimeField(auto_now_add=True)
     remaining_months = models.PositiveIntegerField()
 
