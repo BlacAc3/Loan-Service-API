@@ -30,7 +30,6 @@
 
 ---
 
-
 #### **1.2 `POST /api/auth/register/`**
 - **Method**: `POST`
 - **Description**: This endpoint allows new users to register by providing a username, email, and password. Upon successful registration, the user account is created, and they can log in to access the API. Passwords are stored securely using hashing.
@@ -88,8 +87,8 @@
 - **What It Leads To**: After login, users will receive a JWT token, which they must include in the `Authorization` header (as `Bearer <token>`) when accessing other secured endpoints.
 
 ---
----
-#### **4.1 `POST /api/auth/logout/`**
+
+#### **1.3 `POST /api/auth/logout/`**
 - **Method**: `POST`
 - **Description**: This endpoint logs out users.
 - **Authorization**: Requires a valid JWT token in the request header.
