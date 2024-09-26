@@ -1,6 +1,3 @@
-Here is a detailed explanation of each endpoint for the **Loan Management API**, including the HTTP methods used, their functionality, and what each endpoint leads to.
-
----
 
 ### **1. Authentication Endpoints**
 
