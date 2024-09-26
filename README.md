@@ -113,16 +113,15 @@ python manage.py test
 
 ## API Documentation
 
-### ***Endpoints documentation***
+### ***[API Endpoints documentation](endpoints.md)***
 The full documentation of all working API endpoints provided: [API Endpoints Documentation](endpoints.md)
-
-### ***Database Schema Design:***
 
 
 ### ***OpenAPI Specification (for SwaggerHub)***
 
-Here’s the starting point for your OpenAPI specification. This is what you will upload to SwaggerHub for API visualization: [Open API YAML file](openapi.yaml)
-
+Here’s the starting point for your OpenAPI specification. This is what you will upload to SwaggerHub for API visualization including a DB schema: 
+- [OpenAPI](openapi.yaml)
+- 
 ---
 
 
