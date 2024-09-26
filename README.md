@@ -1,7 +1,7 @@
-### **Project Name: Loan Management API**
+### **Loan Management API**
 
-#### **Project Description:**
-The Loan Management API is designed to handle loan applications, repayment schedules, and tracking for users. This API provides secure authentication via JWT, allows users to manage their loans, and enables administrators to oversee all transactions. The project showcases my expertise in API development, authentication, database design, and testing, along with best practices for scalability, security, and maintainability.
+#### **Description:**
+This Loan Management API is designed to handle loan applications, repayment schedules, and tracking for users. This API provides secure authentication via JWT, allows users to manage their loans, and enables administrators to oversee all transactions. The project showcases my expertise in API development, authentication, database design, and testing, along with best practices for scalability, security, and maintainability.
 
 #### **Technologies Used:**
 - **Django REST Framework (DRF)**: For building the API.
