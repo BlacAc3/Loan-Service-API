@@ -4,7 +4,7 @@ info:
   description: API for managing loans, repayments, and user authentication.
   version: "1.0.0"
 servers:
-  - url: https://api.example.com
+  - url: localhost:8000
 
 paths:
   /api/auth/login/:
