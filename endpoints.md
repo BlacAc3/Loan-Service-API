@@ -28,7 +28,6 @@
 
 - **What It Leads To**: After login, users will receive a JWT token, which they must include in the `Authorization` header (as `Bearer <token>`) when accessing other secured endpoints.
 
----
 
 #### **1.2 `POST /api/auth/register/`**
 - **Method**: `POST`
@@ -60,8 +59,9 @@
     ```
 
 - **What It Leads To**: Once the user registers, they can use the login endpoint to authenticate and gain access to the system.
----
-#### **1.1 `POST /api/token/refresh`**
+
+  
+#### **1.3 `POST /api/token/refresh`**
 - **Method**: `POST`
 - **Description**: This endpoint allows client to refresh access token.
 - **Request Body**:
@@ -86,9 +86,8 @@
 
 - **What It Leads To**: After login, users will receive a JWT token, which they must include in the `Authorization` header (as `Bearer <token>`) when accessing other secured endpoints.
 
----
 
-#### **1.3 `POST /api/auth/logout/`**
+#### **1.4 `POST /api/auth/logout/`**
 - **Method**: `POST`
 - **Description**: This endpoint logs out users.
 - **Authorization**: Requires a valid JWT token in the request header.
@@ -103,10 +102,10 @@
     ```json
       {'detail': 'Successfully logged out.'}
     ```
-    - **404 BAD REQUEST**: Returns error for an invalid token.
-      ```json
-        {'detail': 'Invalid token.'}
-      ```
+  - **404 BAD REQUEST**: Returns error for an invalid token.
+    ```json
+      {'detail': 'Invalid token.'}
+    ```
 ---
 
 ### **2. Loan Endpoints**
