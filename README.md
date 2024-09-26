@@ -111,13 +111,17 @@ python manage.py test
 
 ---
 
-## [API Documentation](endpoints.md)
+## API Documentation
 
-The API is documented using OpenAPI. You can access the interactive API documentation by navigating to:
+### ***Endpoints documentation***
+The full documentation of all working API endpoints provided: [API Endpoints Documentation](endpoints.md)
 
-```
-http://127.0.0.1:8000/api/docs/
-```
+### ***Database Schema Design:***
+
+
+### ***OpenAPI Specification (for SwaggerHub)***
+
+Here’s the starting point for your OpenAPI specification. This is what you will upload to SwaggerHub for API visualization: [Open API YAML file](openapi.yaml)
 
 ---
 
@@ -126,16 +130,3 @@ http://127.0.0.1:8000/api/docs/
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-
-
-
-### ***Database Schema Design:***
-
-
-### ***OpenAPI Specification (for SwaggerHub)***
-
-Here’s the starting point for your OpenAPI specification. This is what you will upload to SwaggerHub for API visualization:
-
-```yaml
-
-```
