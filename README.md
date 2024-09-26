@@ -22,7 +22,7 @@ This Loan Management API is designed to handle loan applications, repayment sche
 7. **Deployment**: Hosted using Docker and deployed on AWS with a CI/CD pipeline. <-------- Functionality Implementation Pending
 8. **API Versioning**: Ensures backward compatibility as new features are added.
 
-[Full API Endpoints description](endpoints.md)
+[Full API Endpoints documentation](endpoints.md)
 
 
 ### ***Database Schema Design:***
