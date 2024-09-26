@@ -22,7 +22,9 @@ This Loan Management API is designed to handle loan applications, repayment sche
 7. **Deployment**: Hosted using Docker and deployed on AWS with a CI/CD pipeline. <-------- Functionality Implementation Pending
 8. **API Versioning**: Ensures backward compatibility as new features are added.
 
----
+<br>
+<br>
+
 
 ## Setup and Installation
 
@@ -99,7 +101,9 @@ python manage.py runserver
 
 Open your browser and visit `http://127.0.0.1:8000/` or `localhost:8000` to see the project.
 
----
+<br>
+<br>
+
 
 ## Running Tests
 
@@ -108,21 +112,24 @@ To run the automated tests for the application, execute the following command:
 ```bash
 python manage.py test
 ```
-
----
+<br>
+<br>
 
 ## API Documentation
 
-### ***[API Endpoints documentation](endpoints.md)***
-The full documentation of all working API endpoints provided: [API Endpoints Documentation](endpoints.md)
+### **Endpoints documentation**
+The full documentation of all working API endpoints provided: 
+[API Endpoints Documentation](endpoints.md)
 
 
-### ***OpenAPI Specification (for SwaggerHub)***
+### **OpenAPI Specification (for SwaggerHub)**
 
-Here’s the starting point for your OpenAPI specification. This is what you will upload to SwaggerHub for API visualization including a DB schema: 
-- [OpenAPI](openapi.yaml)
-- 
----
+Here’s a starting point for the OpenAPI specification. This is what you will upload to SwaggerHub for API visualization: 
+- [OpenAPI YAML file](openapi.yaml) (Database schema included)
+- [SwaggerHub API Visualization](https://app.swaggerhub.com/apis/ACEEZEALA/Ace_Loan/1.0.0)
+
+<br>
+<br>
 
 
 ## License
