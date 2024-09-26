@@ -345,11 +345,3 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
     ---
 
-### **7. Error Handling & Production Considerations**
-
-    - **Rate Limiting**: Implement rate limiting for certain endpoints to protect against abuse.
-    - **CORS**: Configure Cross-Origin Resource Sharing (CORS) for controlled access.
-    - **Logging**: Implement robust logging (using tools like `Sentry`, or `Logstash`) for production monitoring.
-    - **API Documentation**: Utilize SwaggerHub to visually document the API and allow testing directly from the API documentation interface.
-
-    ---
