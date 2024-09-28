@@ -273,6 +273,7 @@ class LoanSchedule(APIView):
 
 
 class GetUserProfile(APIView):
+    permission_classes=[IsAuthenticated]
     def get(self, request):
         auth_user=get_token_user(request)
         loans = auth_user.loans
@@ -282,14 +283,32 @@ class GetUserProfile(APIView):
         rejected_loans:int =loans.filter(status="rejected")
         settled_loans:int = loans.filter(status="paid")
         data = {
-                "id":f"{auth_user.id}",
-                "username":f"{auth_user.username}",
-                "first_name":f"{auth_user.first_name}",
-                "last_name":f"{auth_user.last_name}",
-                "total_applied_loans":f"{total_loans_applied}",
-                "pending_loans":f"{pending_loans}",
-                "approved_loans":f"{approved_loans}",
-                "rejected_loans":f"{rejected_loans}",
-                "settled_loans":f"{settled_loans}"
-                }
+            "id":f"{auth_user.id}",
+            "username":f"{auth_user.username}",
+            "first_name":f"{auth_user.first_name}",
+            "last_name":f"{auth_user.last_name}",
+            "total_applied_loans":f"{total_loans_applied}",
+            "pending_loans":f"{pending_loans}",
+            "approved_loans":f"{approved_loans}",
+            "rejected_loans":f"{rejected_loans}",
+            "settled_loans":f"{settled_loans}"
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class GetAllUsers(APIView):
+    permission_classes=[IsAdminUser]
+    def get(self, request):
+        all_users = User.objects.all()
+        data=[]
+        for user in all_users:
+            user_info= {
+                "id":f"{user.id}",
+                "username":f"{user.username}",
+                "email":f"{user.email}",
+                "first_name":f"{user.first_name}",
+                "last_name":f"{user.last_name}"
+            }
+            data.append(user_info)
+
         return Response(data, status=status.HTTP_200_OK)
