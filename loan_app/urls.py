@@ -18,4 +18,5 @@ urlpatterns = [
     ),
     path("api/repayments/<int:loan_id>/", views.RepayLoan.as_view(), name="repay"),
     path("api/loans/<int:loan_id>/schedule/", views.LoanSchedule.as_view(), name="schedule"),
+    path("api/auth/user/", views.GetUserProfile.as_view(), name="get_profile"),
 ]
