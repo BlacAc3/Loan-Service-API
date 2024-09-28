@@ -298,9 +298,15 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
       - **200 OK**: Returns the details of the currently authenticated user.
         ```json
         {
-          "id": 1,
-          "username": "new_user",
-          "email": "user@example.com"
+            "id":"1",
+            "username":"blacac3",
+            "first_name:"firstname",
+            "last_name":"lastname",
+            "total_applied_loans":"20",
+            "pending_loans":"2",
+            "approved_loans":"5",
+            "rejected_loans":"10",
+            "settled_loans":"3"
         }
         ```
 
