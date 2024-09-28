@@ -40,8 +40,6 @@ def get_token_user(request):
         return user
     except exceptions.InvalidToken:
         raise ValueError("Invalid token")
-
-
 # ------------------------------------------------------------
 
 
@@ -60,9 +58,23 @@ def extract_access_token(request):
         return token
     else:
         raise ValueError('Authorization header must start with "Bearer ".')
-
-
 # ---------------------------------------------------------------------------
+
+
+# Confirm the authenticated user only get access to his loans
+def CheckLoanOwnershipAndExistence(request, loan_id):
+    user = get_token_user(request)
+    if not Loan.objects.filter(id=loan_id, user=user).exists():
+        return Response(
+            {"loan_id": f"{loan_id}", "error": "Loan not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    loan = Loan.objects.get(id=loan_id, user=user)
+    if not RepaymentSchedule.objects.filter(loan=loan).exists():
+        return Response({"error": "A server error occured"})
+    
+    return None
+# -------------
 
 
 # Registration handling
@@ -75,8 +87,6 @@ class RegisterView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 # -----------------------------------------------------------------------------
 
 
@@ -101,8 +111,6 @@ class LoginView(APIView):
             return Response(
                 {"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED
             )
-
-
 # -----------------------------------------------------------------------------------
 
 
@@ -132,8 +140,6 @@ class LogoutView(APIView):
             return Response(
                 {"detail": "Invalid access token."}, status=status.HTTP_400_BAD_REQUEST
             )
-
-
 # -------------------------------------------------------------------------------------
 
 
@@ -153,8 +159,6 @@ class LoanList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 # ------------------------------------------------------------------------------
 
 
@@ -215,6 +219,7 @@ class RepayLoan(APIView):
         }
         return Response(schedule_data, status=status.HTTP_200_OK)
 
+# Sends Loan repayment information
 class LoanSchedule(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -261,18 +266,30 @@ class LoanSchedule(APIView):
             result.append(data)
 
         return Response(result, status=status.HTTP_200_OK)
+# ----------------------------------------------------------
 
 
 
-def CheckLoanOwnershipAndExistence(request, loan_id):
-    user = get_token_user(request)
-    if not Loan.objects.filter(id=loan_id, user=user).exists():
-        return Response(
-            {"loan_id": f"{loan_id}", "error": "Loan not found"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    loan = Loan.objects.get(id=loan_id, user=user)
-    if not RepaymentSchedule.objects.filter(loan=loan).exists():
-        return Response({"error": "A server error occured"})
-    
-    return None
+
+
+class GetUserProfile(APIView):
+    def get(self, request):
+        auth_user=get_token_user(request)
+        loans = auth_user.loans
+        total_loans_applied: int=loans.all().count()
+        pending_loans=loans.filter(status="pending")
+        approved_loans: int=loans.filter(status="approved")
+        rejected_loans:int =loans.filter(status="rejected")
+        settled_loans:int = loans.filter(status="paid")
+        data = {
+                "id":f"{auth_user.id}",
+                "username":f"{auth_user.username}",
+                "first_name":f"{auth_user.first_name}",
+                "last_name":f"{auth_user.last_name}",
+                "total_applied_loans":f"{total_loans_applied}",
+                "pending_loans":f"{pending_loans}",
+                "approved_loans":f"{approved_loans}",
+                "rejected_loans":f"{rejected_loans}",
+                "settled_loans":f"{settled_loans}"
+                }
+        return Response(data, status=status.HTTP_200_OK)
