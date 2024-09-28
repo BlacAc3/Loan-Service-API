@@ -16,6 +16,14 @@ def user():
         username='testuser', email='test@example.com', password='testpassword'
     )
 
+@pytest.fixture
+def admin_user():
+    return User.objects.create_user(
+            username='admin_user', 
+            email='admin@test.com', 
+            password='admintestpassword', 
+            )
+
 
 @pytest.fixture
 def request_factory():
