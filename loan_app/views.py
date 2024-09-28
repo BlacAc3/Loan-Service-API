@@ -230,7 +230,8 @@ class LoanSchedule(APIView):
             "due_date": "2024-10-01",
             "amount_due": 850
         }
-        """    
+        """   
+        amount_due=None
         check_result = CheckLoanOwnershipAndExistence(request, loan_id)
         if check_result is not None:
             return check_result

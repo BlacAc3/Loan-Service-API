@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from loan_app import views
-from .models import Loan, RepaymentSchedule
+from .models import Loan 
 
 
 class RegisterSerializer(serializers.ModelSerializer):
