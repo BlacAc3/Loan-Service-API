@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  title: Loan Management API
+  description: API for managing loans and repayments.
+  version: 1.0.0
+servers: 
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ACEEZEALA/Ace_Loan/1.0.0
+  - url: https://127.0.0.1:8000
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user.
+        username:
+          type: string
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the loan.
+        user_id:
+          type: integer
+          description: ID of the user who applied for the loan.
+        loan_amount:
+          type: number
+          format: decimal
+          description: The loan amount applied by the user.
+        total_interest:
+          type: number
+          format: decimal
+          description: The total interest rate for the loan.
+        term_months:
+          type: integer
+          description: The term of the loan in months.
+        status:
+          type: string
+          enum: ['pending', 'approved', 'rejected', 'paid']
+          default: 'pending'
+          description: Current status of the loan.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the loan was created.
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the loan was approved.
+        locked:
+          type: boolean
+          default: false
+          description: Indicates whether the loan is locked.
+
+    RepaymentSchedule:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the repayment schedule.
+        loan_id:
+          type: integer
+          description: ID of the associated loan.
+        total_due_amount:
+          type: number
+          format: decimal
+          description: The total amount due for repayment.
+        repay_amount_with_interest:
+          type: number
+          format: decimal
+          description: Amount to be repaid including interest.
+        end_of_month_due_amount:
+          type: number
+          format: decimal
+          description: Due amount by the end of each month.
+        expected_monthly_payment:
+          type: number
+          format: decimal
+          description: The expected monthly payment.
+        due_date:
+          type: string
+          format: date-time
+          description: Date when the payment is due.
+        remaining_months:
+          type: integer
+          description: Remaining months for repayment.
+        total_months_for_payment:
+          type: integer
+          description: Total months allocated for repayment.
+
+paths:
+  /api/auth/login/:
+    post:
+      summary: User Login
+      description: Authenticate the user and return a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh_token:
+                    type: string
+                  access_token:
+                    type: string
+        '401':
+          description: Invalid credentials.
+
+  /api/loans/:
+    get:
+      summary: List all loans for the authenticated user
+      responses:
+        '200':
+          description: A list of loans.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Loan'
+        '401':
+          description: Unauthorized.
+
+    post:
+      summary: Apply for a new loan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Loan'
+      responses:
+        '201':
+          description: Loan successfully applied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Loan'
+        '400':
+          description: Validation error.
+
+  /api/repayments/{loan_id}/:
+    post:
+      summary: Make a loan repayment
+      parameters:
+        - in: path
+          name: loan_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: decimal
+      responses:
+        '200':
+          description: Repayment successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepaymentSchedule'
+        '400':
+          description: Invalid repayment amount.
+
+  /api/loans/{loan_id}/schedule/:
+    get:
+      summary: Get repayment schedule for a loan
+      parameters:
+        - in: path
+          name: loan_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Loan repayment schedule.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepaymentSchedule'
+        '401':
+          description: Unauthorized.

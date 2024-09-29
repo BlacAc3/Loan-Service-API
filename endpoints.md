@@ -1,6 +1,3 @@
-Here is a detailed explanation of each endpoint for the **Loan Management API**, including the HTTP methods used, their functionality, and what each endpoint leads to.
-
----
 
 ### **1. Authentication Endpoints**
 
@@ -30,8 +27,6 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
     ```
 
 - **What It Leads To**: After login, users will receive a JWT token, which they must include in the `Authorization` header (as `Bearer <token>`) when accessing other secured endpoints.
-
----
 
 
 #### **1.2 `POST /api/auth/register/`**
@@ -64,8 +59,9 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
     ```
 
 - **What It Leads To**: Once the user registers, they can use the login endpoint to authenticate and gain access to the system.
----
-#### **1.1 `POST /api/token/refresh`**
+
+  
+#### **1.3 `POST /api/token/refresh`**
 - **Method**: `POST`
 - **Description**: This endpoint allows client to refresh access token.
 - **Request Body**:
@@ -90,9 +86,8 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
 - **What It Leads To**: After login, users will receive a JWT token, which they must include in the `Authorization` header (as `Bearer <token>`) when accessing other secured endpoints.
 
----
----
-#### **4.1 `POST /api/auth/logout/`**
+
+#### **1.4 `POST /api/auth/logout/`**
 - **Method**: `POST`
 - **Description**: This endpoint logs out users.
 - **Authorization**: Requires a valid JWT token in the request header.
@@ -107,10 +102,10 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
     ```json
       {'detail': 'Successfully logged out.'}
     ```
-    - **404 BAD REQUEST**: Returns error for an invalid token.
-      ```json
-        {'detail': 'Invalid token.'}
-      ```
+  - **404 BAD REQUEST**: Returns error for an invalid token.
+    ```json
+      {'detail': 'Invalid token.'}
+    ```
 ---
 
 ### **2. Loan Endpoints**
@@ -351,11 +346,3 @@ Here is a detailed explanation of each endpoint for the **Loan Management API**,
 
     ---
 
-### **7. Error Handling & Production Considerations**
-
-    - **Rate Limiting**: Implement rate limiting for certain endpoints to protect against abuse.
-    - **CORS**: Configure Cross-Origin Resource Sharing (CORS) for controlled access.
-    - **Logging**: Implement robust logging (using tools like `Sentry`, or `Logstash`) for production monitoring.
-    - **API Documentation**: Utilize SwaggerHub to visually document the API and allow testing directly from the API documentation interface.
-
-    ---
