@@ -28,7 +28,37 @@ This Loan Management API is designed to handle loan applications, repayment sche
 
 ## Setup and Installation
 
-### Prerequisites
+### Running with Docker
+Ensure you have Docker installed, if not follow their installation guide [Docker Installation](https://docs.docker.com/engine/install/)
+To run a Docker image and assign a custom name to the container, you can use the `--name` option in the `docker run` command.
+
+#### 1. Build Docker Image:
+
+```bash
+docker build -t loan-service . 
+```
+
+#### 2. Run Docker Image:
+The project will run in the background at `localhost:8000`, remove the `-d` tag to run with visual results.
+```bash
+docker run --name loan-service -d -p 8000:8000 loan-service
+```
+
+#### 3. View all running images
+```bash
+docker ps
+```
+
+#### 4. Stop Docker Image:
+```bash
+docker stop loan-service 
+```
+
+
+<br>
+<br>
+
+### Manual Installation
 
 Ensure you have the following installed on your system:
 
@@ -36,8 +66,6 @@ Ensure you have the following installed on your system:
 - [PostgreSQL](https://www.postgresql.org/download/) (or any other supported database)
 - [Virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) for managing virtual environments
 - [Git](https://git-scm.com/) for version control
-
-### Installation Steps
 
 #### 1. Clone the Repository
 
