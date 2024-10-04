@@ -1,19 +1,16 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render
-from django.utils.text import wrap
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Loan, RepaymentSchedule
 from .serializers import LoanSerializer, RegisterSerializer
-from datetime import datetime 
 from dateutil.relativedelta import relativedelta
 
 
