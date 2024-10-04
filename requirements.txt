@@ -6,3 +6,4 @@ psycopg2-binary
 django-environ
 whitenoise
 drf-yasg
+python-dateutil
