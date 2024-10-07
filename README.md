@@ -58,7 +58,7 @@ docker stop loan-service
 <br>
 <br>
 
-### Manual Installation
+### Manual Setup
 
 Ensure you have the following installed on your system:
 
