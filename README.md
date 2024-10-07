@@ -39,7 +39,7 @@ docker build -t loan-service .
 ```
 
 #### 2. Run Docker Image:
-The project will run in the background at `localhost:8000`, add the `-d` tag to run in background. Replace ` --name loan-service ` to your preferred container name if the former is already in use, E.g - ` --name loan-service2 `. 
+The project will run in the background at `localhost:8000`, add the `-d` tag to run in the background. Replace ` --name loan-service ` with your preferred container name if the former is already in use, e.g. - ` --name loan-service2 `. 
 ```bash
 docker run --name loan-service -p 8000:8000 loan-service
 ```
@@ -51,9 +51,9 @@ docker ps
 
 #### 4. Add an admin password
 ```bash
-docker exec -it <container-id/name> python manage.py changepassword admin
+docker exec -it loan-service python manage.py changepassword admin
 ```
-The Admin Page will now be accessible at `http://127.0.0.1:8000/admin` or `localhost:8000/admin`
+Replace `loan-service` with the container/image name used in `docker run`. Access the admin page at the URLs `http://127.0.0.1:8000/admin` or `localhost:8000/admin`
 - username: `admin`
 - password: `(Your set password from the above command)`
 
