@@ -113,7 +113,7 @@ python manage.py migrate
 
 #### 6. Create a Superuser (Admin)
 
-Create an admin user to access the Django admin panel:
+Create an admin user to access the Django admin panel `http://127.0.0.1:8000/admin` or `localhost:8000/admin` after running the server:
 
 ```bash
 python manage.py createsuperuser
@@ -127,7 +127,7 @@ Now that everything is set up, you can run the development server:
 python manage.py runserver
 ```
 
-Open your browser and visit `http://127.0.0.1:8000/` or `localhost:8000` to see the project.
+To see the project, open your browser and visit `http://127.0.0.1:8000/` or `localhost:8000`.
 
 <br>
 <br>
