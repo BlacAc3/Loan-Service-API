@@ -24,6 +24,13 @@ COPY . /loanapp/
 # Expose the port the app runs on
 EXPOSE 8000
 
+# Set environment variables for Django admin user
+ENV DJANGO_SUPERUSER_USERNAME=admin \
+    DJANGO_SUPERUSER_PASSWORD=adminpassword \
+    DJANGO_SUPERUSER_EMAIL=admin@example.com
+
 # Run database migrations and start Django development server
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && \
+    python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL && \
+    python manage.py runserver 0.0.0.0:8000"]
 
