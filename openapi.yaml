@@ -1,111 +1,23 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Loan Management API
-  description: API for managing loans and repayments.
-  version: 1.0.0
-servers: 
+  version: "1.0.0"
+  description: >
+    This API provides endpoints for authentication, loan management,
+    repayments, loan schedules, and admin user management.
+servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/ACEEZEALA/Ace_Loan/1.0.0
-  - url: https://127.0.0.1:8000
-
-components:
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier for the user.
-        username:
-          type: string
-        email:
-          type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-
-    Loan:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier for the loan.
-        user_id:
-          type: integer
-          description: ID of the user who applied for the loan.
-        loan_amount:
-          type: number
-          format: decimal
-          description: The loan amount applied by the user.
-        total_interest:
-          type: number
-          format: decimal
-          description: The total interest rate for the loan.
-        term_months:
-          type: integer
-          description: The term of the loan in months.
-        status:
-          type: string
-          enum: ['pending', 'approved', 'rejected', 'paid']
-          default: 'pending'
-          description: Current status of the loan.
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the loan was created.
-        approved_at:
-          type: string
-          format: date-time
-          nullable: true
-          description: Timestamp when the loan was approved.
-        locked:
-          type: boolean
-          default: false
-          description: Indicates whether the loan is locked.
-
-    RepaymentSchedule:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier for the repayment schedule.
-        loan_id:
-          type: integer
-          description: ID of the associated loan.
-        total_due_amount:
-          type: number
-          format: decimal
-          description: The total amount due for repayment.
-        repay_amount_with_interest:
-          type: number
-          format: decimal
-          description: Amount to be repaid including interest.
-        end_of_month_due_amount:
-          type: number
-          format: decimal
-          description: Due amount by the end of each month.
-        expected_monthly_payment:
-          type: number
-          format: decimal
-          description: The expected monthly payment.
-        due_date:
-          type: string
-          format: date-time
-          description: Date when the payment is due.
-        remaining_months:
-          type: integer
-          description: Remaining months for repayment.
-        total_months_for_payment:
-          type: integer
-          description: Total months allocated for repayment.
-
+    url: https://loan-service-api.vercel.app/
+  - url: http://localhost:8000
 paths:
   /api/auth/login/:
     post:
       summary: User Login
-      description: Authenticate the user and return a JWT token.
+      description: >
+        Allows users to log in by providing their username and password.
+        Upon successful login, the API returns a JSON Web Token (JWT)
+        for authenticating subsequent requests.
       requestBody:
         required: true
         content:
@@ -115,11 +27,13 @@ paths:
               properties:
                 username:
                   type: string
+                  example: example_user
                 password:
                   type: string
+                  example: example_password
       responses:
         '200':
-          description: Successful login.
+          description: Successful login. Returns JWT tokens.
           content:
             application/json:
               schema:
@@ -127,90 +41,534 @@ paths:
                 properties:
                   refresh_token:
                     type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR..."
                   access_token:
                     type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR..."
         '401':
-          description: Invalid credentials.
-
-  /api/loans/:
-    get:
-      summary: List all loans for the authenticated user
-      responses:
-        '200':
-          description: A list of loans.
+          description: Unauthorized. Invalid credentials.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Loan'
-        '401':
-          description: Unauthorized.
-
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Invalid credentials"
+                    
+  /api/auth/register/:
     post:
-      summary: Apply for a new loan
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Loan'
-      responses:
-        '201':
-          description: Loan successfully applied.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Loan'
-        '400':
-          description: Validation error.
-
-  /api/repayments/{loan_id}/:
-    post:
-      summary: Make a loan repayment
-      parameters:
-        - in: path
-          name: loan_id
-          required: true
-          schema:
-            type: integer
+      summary: User Registration
+      description: >
+        Allows new users to register by providing first name, last name,
+        username, email, and password. Upon successful registration, the
+        user account is created.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - first_name
+                - last_name
+                - username
+                - email
+                - password
               properties:
-                amount:
-                  type: number
-                  format: decimal
+                first_name:
+                  type: string
+                  example: user_firstname
+                last_name:
+                  type: string
+                  example: user_lastname
+                username:
+                  type: string
+                  example: new_user
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: strong_password
       responses:
-        '200':
-          description: Repayment successful.
+        '201':
+          description: User successfully registered.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RepaymentSchedule'
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  username:
+                    type: string
+                    example: new_user
+                  email:
+                    type: string
+                    example: user@example.com
         '400':
-          description: Invalid repayment amount.
-
-  /api/loans/{loan_id}/schedule/:
-    get:
-      summary: Get repayment schedule for a loan
-      parameters:
-        - in: path
-          name: loan_id
-          required: true
-          schema:
-            type: integer
+          description: Bad Request. Username or email already taken, or password does not meet security requirements.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                example:
+                  username: ["This username is already taken."]
+                  
+  /api/token/refresh:
+    post:
+      summary: Refresh JWT Token
+      description: >
+        Refresh the access token using a valid refresh token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh
+              properties:
+                refresh:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR"
       responses:
         '200':
-          description: Loan repayment schedule.
+          description: Returns the new access token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR..."
+        '404':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Invalid credentials"
+                    
+  /api/auth/logout/:
+    post:
+      summary: User Logout
+      description: >
+        Logs out the user by invalidating the provided refresh token.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh
+              properties:
+                refresh:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR..."
+      responses:
+        '205':
+          description: Successfully logged out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Successfully logged out."
+        '404':
+          description: Invalid token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Invalid token."
+                    
+  /api/loans/:
+    get:
+      summary: List Loans
+      description: >
+        Lists all loans for the authenticated user, including details such as
+        loan amount, interest rate, term, status, and timestamps.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns a list of loans.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RepaymentSchedule'
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    loan_amount:
+                      type: number
+                      example: 10000
+                    total_interest:
+                      type: number
+                      example: 5.0
+                    term_months:
+                      type: integer
+                      example: 12
+                    status:
+                      type: string
+                      example: pending
+                    created_at:
+                      type: string
+                      format: date-time
+                      example: "2024-09-17T12:00:00Z"
+                    approved_at:
+                      type: string
+                      format: date-time
+                      nullable: true
+                      example: null
         '401':
           description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Authentication credentials were not provided."
+    post:
+      summary: Apply for a Loan
+      description: >
+        Allows authenticated users to apply for a loan by providing the loan
+        amount, total interest, and term in months. The loan application will be
+        created in a pending state.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - loan_amount
+                - total_interest
+                - term_months
+              properties:
+                loan_amount:
+                  type: number
+                  example: 10000
+                total_interest:
+                  type: number
+                  example: 5.0
+                term_months:
+                  type: integer
+                  example: 12
+      responses:
+        '201':
+          description: Loan application created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 3
+                  loan_amount:
+                    type: number
+                    example: 10000
+                  total_interest:
+                    type: number
+                    example: 5.0
+                  term_months:
+                    type: integer
+                    example: 12
+                  status:
+                    type: string
+                    example: pending
+                  approved_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: null
+        '400':
+          description: Bad Request. Validation error.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                example:
+                  loan_amount: ["Ensure this value is greater than or equal to 1000."]
+                  
+  /api/loans/{loan_id}/approve/:
+    post:
+      summary: Approve or Reject Loan
+      description: >
+        Allows admin users to approve or reject a loan application.
+        This endpoint requires the user to have an "admin" role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: loan_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                  example: approved
+      responses:
+        '200':
+          description: Loan status updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 3
+                  loan_amount:
+                    type: number
+                    example: 10000
+                  interest_rate:
+                    type: number
+                    example: 5.0
+                  term_months:
+                    type: integer
+                    example: 12
+                  status:
+                    type: string
+                    example: approved
+                  approved_at:
+                    type: string
+                    format: date-time
+                    example: "2024-09-17T12:00:00Z"
+        '403':
+          description: Forbidden. User is not an admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "You do not have permission to perform this action."
+                    
+  /api/repayments/{loan_id}/:
+    post:
+      summary: Make a Repayment
+      description: >
+        Allows users to make repayments towards an approved loan. The provided
+        amount is applied to the loan balance.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: loan_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  example: 500
+      responses:
+        '200':
+          description: Repayment processed and loan balance updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 4
+                  loan_id:
+                    type: integer
+                    example: 1
+                  amount_paid:
+                    type: number
+                    example: 500
+                  amount_outstanding:
+                    type: string
+                    example: "1000"
+                  final_repayment_date:
+                    type: string
+                    format: date-time
+                    example: "2024-09-17T15:00:00Z"
+        '400':
+          description: Bad Request. Repayment amount exceeds outstanding balance or other validation errors.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Repayment amount exceeds outstanding balance."
+                    
+  /api/loans/{loan_id}/schedule/:
+    get:
+      summary: Get Loan Repayment Schedule
+      description: >
+        Provides the repayment schedule for a specific loan, detailing the monthly
+        amount due and due dates.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: loan_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Returns the repayment schedule details.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    month:
+                      type: integer
+                      example: 1
+                    due_date:
+                      type: string
+                      example: "2024-10-01"
+                    amount_due:
+                      type: number
+                      example: 850
+                      
+  /api/auth/user/:
+    get:
+      summary: Get Authenticated User Profile
+      description: >
+        Retrieves the profile information of the currently authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns the user profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "1"
+                  username:
+                    type: string
+                    example: blacac3
+                  first_name:
+                    type: string
+                    example: firstname
+                  last_name:
+                    type: string
+                    example: lastname
+                  total_applied_loans:
+                    type: string
+                    example: "20"
+                  pending_loans:
+                    type: string
+                    example: "2"
+                  approved_loans:
+                    type: string
+                    example: "5"
+                  rejected_loans:
+                    type: string
+                    example: "10"
+                  settled_loans:
+                    type: string
+                    example: "3"
+                    
+  /api/users/:
+    get:
+      summary: List All Users
+      description: >
+        Allows admin users to list all registered users in the system.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Returns a list of all registered users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+                      example: admin
+                    email:
+                      type: string
+                      example: admin@example.com
+        '403':
+          description: Forbidden. User is not an admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "You do not have permission to perform this action."
+                    
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
