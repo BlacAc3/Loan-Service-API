@@ -60,7 +60,7 @@ ROOT_URLCONF = 'api.urls'
 CORS_ALLOWED_ORIGINS = [
 "https://zloan.vercel.app",
 "https://api.domain.com",
-"http://localhost:8080",
+"http://localhost:5173",
 ]
 
 TEMPLATES = [
