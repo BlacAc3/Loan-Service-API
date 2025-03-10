@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
     if (!token) {
       setIsLoading(false);
     }
-    fetch(apiBaseUrl + "/api/auth/user", {
+    fetch(apiBaseUrl + "/api/auth/user/", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
