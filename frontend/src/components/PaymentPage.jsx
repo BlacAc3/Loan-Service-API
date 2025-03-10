@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import useAuth from "../context/useAuth";
 import * as Tabs from "@radix-ui/react-tabs";
 
 const PaymentPage = ({ isAuthenticated }) => {
@@ -18,6 +19,7 @@ const PaymentPage = ({ isAuthenticated }) => {
   const [formErrors, setFormErrors] = useState({});
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const { apiBaseUrl } = useAuth();
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -26,7 +28,7 @@ const PaymentPage = ({ isAuthenticated }) => {
 
         // Fetch loan repayment schedule
         const response = await fetch(
-          `http://localhost:8000/api/loans/${loanId}/schedule/`,
+          apiBaseUrl + `/api/loans/${loanId}/schedule/`,
           {
             method: "GET",
             headers: {
@@ -68,7 +70,7 @@ const PaymentPage = ({ isAuthenticated }) => {
     };
 
     fetchScheduleData();
-  }, [loanId, isAuthenticated, navigate]);
+  }, [loanId, isAuthenticated, navigate, apiBaseUrl]);
 
   const validateForm = () => {
     const errors = {};
@@ -96,21 +98,18 @@ const PaymentPage = ({ isAuthenticated }) => {
 
     try {
       // Make the payment API call
-      const response = await fetch(
-        `http://localhost:8000/api/repayments/${loanId}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify({
-            amount: parseFloat(paymentAmount),
-            // payment_method: paymentMethod,
-            // Include other payment details as needed by your API
-          }),
+      const response = await fetch(apiBaseUrl + `/api/repayments/${loanId}/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-      );
+        body: JSON.stringify({
+          amount: parseFloat(paymentAmount),
+          // payment_method: paymentMethod,
+          // Include other payment details as needed by your API
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Payment failed: ${response.status}`);

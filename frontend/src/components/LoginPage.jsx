@@ -20,7 +20,7 @@ const LoginPage = (props) => {
   const [signupPassword, setSignupPassword] = useState("");
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, apiBaseUrl } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const LoginPage = (props) => {
 
     try {
       // API endpoint for authentication
-      const response = await fetch("http://localhost:8000/api/auth/login/", {
+      const response = await fetch(apiBaseUrl + "/api/auth/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const LoginPage = (props) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/auth/register/", {
+      const response = await fetch(apiBaseUrl + "/api/auth/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

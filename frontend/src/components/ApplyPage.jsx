@@ -1,7 +1,9 @@
 import React from "react";
+import useAuth from "../context/useAuth";
 import CalculatorSection from "../home/CalculatorSection";
 
 const LoanApplication = () => {
+  const { apiBaseUrl } = useAuth();
   const send_request = (loan_amount, term_months, annual_interest_rate) => {
     const request_body = {
       loan_amount: loan_amount,
@@ -9,7 +11,7 @@ const LoanApplication = () => {
       term_months: term_months,
     };
 
-    fetch("http://localhost:8000/api/loans/", {
+    fetch(apiBaseUrl + "/api/loans/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import LoginPage from "./LoginPage";
 import LoanMetrics from "./Overview";
 import { useState, useEffect } from "react";
+import useAuth from "../context/useAuth";
 import * as Tabs from "@radix-ui/react-tabs";
 import Modal from "react-modal";
 
@@ -12,25 +13,23 @@ const Dashboard = () => {
   const [user, setUser] = useState();
   const [change, makeChange] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   // const navigate = useNavigate();
   Modal.setAppElement("#root");
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => setModalIsOpen(false);
+  const { apiBaseUrl } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch loans and user data in parallel
         const [loansResponse, userResponse] = await Promise.all([
-          fetch("http://localhost:8000/api/loans/", {
+          fetch(apiBaseUrl + "/api/loans/", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
           }),
-          fetch("http://localhost:8000/api/auth/user/", {
+          fetch(apiBaseUrl + "/api/auth/user/", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -59,7 +58,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, [change]);
+  }, [change, apiBaseUrl]);
 
   const ApproveLoan = async (loan_id) => {
     try {
@@ -83,7 +82,6 @@ const Dashboard = () => {
       // Handle error response here, e.g., show an error message to the user
     } finally {
       setLoading(false);
-      setModalIsOpen(false);
     }
   };
 
@@ -109,7 +107,6 @@ const Dashboard = () => {
       // Handle error response here, e.g., show an error message to the user
     } finally {
       setLoading(false);
-      setModalIsOpen(false);
     }
   };
 

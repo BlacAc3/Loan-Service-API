@@ -8,13 +8,15 @@ import AuthContext from "./AuthContext";
 const AuthProvider = ({ children }) => {
   const [loading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const apiBaseUrl = "https://loan-service-api.vercel.app";
+  console.log(apiBaseUrl);
+  console.log("this is the api url");
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
       setIsLoading(false);
     }
-    fetch("http://localhost:8000/api/auth/user/", {
+    fetch(apiBaseUrl + "/api/auth/user", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -37,11 +39,11 @@ const AuthProvider = ({ children }) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [setIsLoading]);
+  }, [setIsLoading, apiBaseUrl]);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, loading }}
+      value={{ isAuthenticated, setIsAuthenticated, loading, apiBaseUrl }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import useAuth from "../context/useAuth";
 
 const LoanPage = () => {
   const { loanId } = useParams();
@@ -9,22 +10,20 @@ const LoanPage = () => {
   const [loanDetails, setLoanDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { apiBaseUrl } = useAuth();
 
   useEffect(() => {
     const fetchLoanDetails = async () => {
       setLoading(true);
 
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/loans/${loanId}/`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
+        const response = await fetch(apiBaseUrl + `/api/loans/${loanId}/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        );
+        });
 
         // Check for unauthorized response
         if (response.status === 401 || response.status === 403) {
@@ -49,7 +48,7 @@ const LoanPage = () => {
     };
 
     fetchLoanDetails();
-  }, [loanId, navigate]);
+  }, [loanId, navigate, apiBaseUrl]);
 
   // Make sure loanDetails exists before trying to access its properties
   const repayment =

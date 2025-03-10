@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import useAuth from "../context/useAuth";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -26,11 +27,12 @@ const LoanMetrics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [metrics, setMetrics] = useState(null);
+  const { apiBaseUrl } = useAuth();
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/auth/user/", {
+        const response = await fetch(apiBaseUrl + "/api/auth/user/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -53,7 +55,7 @@ const LoanMetrics = () => {
     };
 
     fetchMetrics();
-  }, []);
+  }, [apiBaseUrl]);
 
   // Format currency numbers
   const formatCurrency = (amount) => {
