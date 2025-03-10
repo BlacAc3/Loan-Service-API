@@ -154,8 +154,8 @@ const LoginPage = (props) => {
     }
 
     const result = await register({
-      firstName,
-      lastName,
+      first_name: firstName,
+      last_name: lastName,
       username,
       email: signupEmail,
       password: signupPassword,
