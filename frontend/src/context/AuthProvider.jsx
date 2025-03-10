@@ -9,6 +9,7 @@ const AuthProvider = ({ children }) => {
   const [loading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const apiBaseUrl = "https://loan-service-api.vercel.app";
+  // const apiBaseUrl = "http://localhost:8000";
   console.log(apiBaseUrl);
   console.log("this is the api url");
   useEffect(() => {
