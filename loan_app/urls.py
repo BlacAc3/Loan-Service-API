@@ -13,8 +13,10 @@ urlpatterns = [
     path("api/auth/login/", views.LoginView.as_view(), name="login"),
     path("api/auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+    path("api/loans/<int:loan_id>/", views.LoanDetails.as_view(), name="loan_detail"),
     path("api/loans/<int:loan_id>/approve/", views.ApproveLoan.as_view(), name="approve"),
+    path("api/loans/<int:loan_id>/reject/", views.RejectLoan.as_view(), name="reject"),
     path("api/repayments/<int:loan_id>/", views.RepayLoan.as_view(), name="repay"),
-    path("api/loans/<int:loan_id>/schedule/", views.LoanSchedule.as_view(), name="schedule"),
+    path("api/loans/<int:loan_id>/schedule/", views.RepaymentDetails.as_view(), name="schedule"),
     path("api/auth/user/", views.GetUserProfile.as_view(), name="get_profile"),
 ]

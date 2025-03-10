@@ -10,7 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Loan, RepaymentSchedule
-from .serializers import LoanSerializer, RegisterSerializer
+from .serializers import LoanSerializer, RegisterSerializer, RepaymentSerializer
 from dateutil.relativedelta import relativedelta
 
 
@@ -69,7 +69,7 @@ def CheckLoanOwnershipAndExistence(request, loan_id):
     loan = Loan.objects.get(id=loan_id, user=user)
     if not RepaymentSchedule.objects.filter(loan=loan).exists():
         return Response({"error": "A server error occured"})
-    
+
     return None
 # -------------
 
@@ -157,13 +157,28 @@ class LoanList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # ------------------------------------------------------------------------------
+# Get individual loan details
+class LoanDetails(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, loan_id):
+        check_result = CheckLoanOwnershipAndExistence(request, loan_id)
+        if check_result is not None:
+            return check_result
+
+        loan = Loan.objects.get(id=loan_id)
+
+        serializer = LoanSerializer(loan)
+
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ApproveLoan(APIView):
-    permission_classes = [IsAdminUser]
-
-    def post(self, request, loan_id):
-        loan_status = request.data["status"].lower()
+    # permission_classes = [IsAdminUser]
+    permission_classes=[IsAuthenticated]
+    def get(self, request, loan_id):
+        loan_status = "approved"
 
         if not Loan.objects.filter(id=loan_id).exists():
             return Response(
@@ -178,16 +193,67 @@ class ApproveLoan(APIView):
                 },
                 status=status.HTTP_409_CONFLICT,
             )
+        if Loan.objects.filter(id=loan_id, status=loan_status).exists():
+            return Response(
+                {
+                    "loan_id": f"{loan_id}",
+                    "detail": "This loan has been approved already",
+                }
+            )
         loan_to_approve = Loan.objects.get(id=loan_id)
         if loan_status == "approved":
             loan_to_approve.approve_loan()
         loan_to_approve.locked = True
-        try:
+        try    :
             loan_to_approve.status = loan_status
         except:
             Response({"error": "Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
         loan_to_approve.save()
         return Response({"loan_id": f"{loan_id}", "current_status": f"{loan_status}"}, status=status.HTTP_200_OK)
+
+class RejectLoan(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self, request, loan_id):
+            loan_status = "rejected"
+
+            if not Loan.objects.filter(id=loan_id).exists():
+                return Response(
+                    {"loan_id": f"{loan_id}", "error": "Loan not found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            elif Loan.objects.filter(id=loan_id, status=loan_status).exists():
+                return Response(
+                    {
+                        "loan_id": f"{loan_id}",
+                        "detail": "This loan has been approved already",
+                    }
+                )
+            elif Loan.objects.filter(id=loan_id, status="approved").exists():
+                return Response(
+                   {
+                       "loan_id":f"{loan_id}",
+                       "detail":"Approved Loans can not be rejected",
+                   }
+                )
+
+            # if not Loan.objects.filter(id=loan_id, locked=False).exists():
+            #     return Response(
+            #         {
+            #             "loan_id": f"{loan_id}",
+            #             "detail": "This loan has been resolved by Admin",
+            #         },
+            #         status=status.HTTP_409_CONFLICT,
+            #     )
+            loan_to_approve = Loan.objects.get(id=loan_id)
+            if loan_status == "approved":
+                loan_to_approve.approve_loan()
+            loan_to_approve.locked = True
+            try:
+                loan_to_approve.status = loan_status
+            except:
+                Response({"error": "Bad Request"}, status=status.HTTP_400_BAD_REQUEST)
+            loan_to_approve.save()
+            return Response({"loan_id": f"{loan_id}", "current_status": f"{loan_status}"}, status=status.HTTP_200_OK)
 
 
 class RepayLoan(APIView):
@@ -199,14 +265,21 @@ class RepayLoan(APIView):
         if check_result is not None:
             return check_result
         loan_to_repay = Loan.objects.get(id=loan_id)
-        loan_schedule = RepaymentSchedule.objects.get(loan=loan_to_repay)
-        
+        loan_schedule = RepaymentSchedule.objects.filter(loan=loan_to_repay).first()
+
         if loan_to_repay.status != "approved":
             return Response(
                 {"loan_id": f"{loan_id}", "detail": "Cannot repay an unapproved loan"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-            
+        elif loan_schedule.total_due_amount == 0:
+            loan_to_repay.status = "paid"
+            loan_to_repay.save()
+            return Response(
+                {"loan_id":f"{loan_id}", "details":"Loan has been Paid off completely"}, status=status.HTTP_400_BAD_REQUEST)
+
+        old_due_amount = loan_schedule.total_due_amount
+
         loan_schedule.update_repayment(amount)
         schedule_data = {
             "loan_id": f"{loan_id}",
@@ -214,6 +287,11 @@ class RepayLoan(APIView):
             "amount_outstanding":f"{loan_schedule.total_due_amount}",
             "final_repayment_date": f"{loan_schedule.due_date}",
         }
+        if loan_schedule.total_due_amount == old_due_amount:
+            return Response(
+                {"loan_id":f"{loan_id}", "detail":"Pay the exact amount and not more."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(schedule_data, status=status.HTTP_200_OK)
 
 # Sends Loan repayment information
@@ -227,7 +305,7 @@ class LoanSchedule(APIView):
             "due_date": "2024-10-01",
             "amount_due": 850
         }
-        """   
+        """
         amount_due=None
         check_result = CheckLoanOwnershipAndExistence(request, loan_id)
         if check_result is not None:
@@ -251,7 +329,7 @@ class LoanSchedule(APIView):
             #then it means the iteration has passed the point/month in which the user is in owing a certain amount
             if claimed_amount_due > loan_schedule.expected_monthly_payment:
                 amount_due=loan_schedule.expected_monthly_payment
-            
+
             #for each month the due date is the first of the next month
             next_month = loan.approved_at + relativedelta(months=1)
             due_date = next_month.replace(day=1)
@@ -265,9 +343,17 @@ class LoanSchedule(APIView):
 
         return Response(result, status=status.HTTP_200_OK)
 # ----------------------------------------------------------
+#
+class RepaymentDetails(APIView):
+    permission_classes=[IsAuthenticated]
 
-
-
+    def get(self, request, loan_id):
+        check_result = CheckLoanOwnershipAndExistence(request, loan_id)
+        if check_result is not None:
+            return check_result
+        loan = Loan.objects.get(id=loan_id).repayments.first()
+        serializer = RepaymentSerializer(loan)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetUserProfile(APIView):
@@ -276,23 +362,59 @@ class GetUserProfile(APIView):
         auth_user=get_token_user(request)
         loans = auth_user.loans
         total_loans_applied: int=loans.all().count()
+        total_loan_amount = sum(loans.filter(status="approved").values_list('loan_amount', flat=True))
+        # total_due_amount1 = sum(
+        #     repayment.total_due_amount
+        #     for loan in loans.filter(status="approved")
+        #     for repayment in loan.repayments.all()
+        # )
+        total_due_amount = 0
+        mean_interest_rate = None
+        interest_rates = loans.filter(status="approved").values_list('total_interest', flat=True)
+        try:
+            mean_interest_rate = round(sum(interest_rates) / len(interest_rates), 2)
+        except:
+            mean_interest_rate = 0
         pending_loans=loans.filter(status="pending")
-        approved_loans: int=loans.filter(status="approved")
-        rejected_loans:int =loans.filter(status="rejected")
-        settled_loans:int = loans.filter(status="paid")
+        approved_loans=loans.filter(status="approved")
+        rejected_loans =loans.filter(status="rejected")
+        settled_loans = loans.filter(status="paid")
+        # print(f"Total Approved Loans: {len(approved_loans)}")
+
+        # Clean up code to make sure the loan only has one repayment object
+        for loan in approved_loans:
+            if len(loan.repayments.all()) >1:
+                first_repayment = loan.repayments.first()
+                for repayment in loan.repayments.all():
+                    if repayment.id == first_repayment.id:
+                        continue
+                    else:
+                        repayment.delete()
+
+        for loan in approved_loans:
+            # print(loan.repayments.all())
+            for repayment in loan.repayments.all():
+                if total_due_amount is None:
+                    total_due_amount = float(repayment.total_due_amount)
+                else:
+                    total_due_amount =float(total_due_amount)+ float(repayment.total_due_amount)
+
+
         data = {
             "id":f"{auth_user.id}",
             "username":f"{auth_user.username}",
-            "first_name":f"{auth_user.first_name}",
-            "last_name":f"{auth_user.last_name}",
-            "total_applied_loans":f"{total_loans_applied}",
-            "pending_loans":f"{pending_loans}",
-            "approved_loans":f"{approved_loans}",
-            "rejected_loans":f"{rejected_loans}",
-            "settled_loans":f"{settled_loans}"
+            "firstname":f"{auth_user.first_name}",
+            "lastname":f"{auth_user.last_name}",
+            "totalLoanAmount":f"{total_loan_amount}",
+            "meanInterestRate":f"{mean_interest_rate}",
+            "totalAppliedLoans":f"{total_loans_applied}",
+            "totalRemainingBalance":f"{total_due_amount}",
+            "pendingLoans":f"{pending_loans}",
+            "approvedLoans":f"{approved_loans}",
+            "rejectedLoans":f"{rejected_loans}",
+            "settledLoans":f"{settled_loans}"
         }
         return Response(data, status=status.HTTP_200_OK)
-
 
 class GetAllUsers(APIView):
     permission_classes=[IsAdminUser]

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from loan_app import views
-from .models import Loan 
+from .models import Loan, RepaymentSchedule
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -29,10 +29,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class RepaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RepaymentSchedule  # Assuming you have a Repayment model
+        fields = ['id','repay_amount_with_interest', 'end_of_month_due_amount', 'total_due_amount', 'expected_monthly_payment', 'due_date', 'remaining_months', 'total_months_for_payment']
+
+
 class LoanSerializer(serializers.ModelSerializer):
+    repayments = RepaymentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Loan
-        fields =["id", "loan_amount", "total_interest", "term_months", "status", "created_at", "approved_at"]
+        depth = 1
+        fields = ["id", "loan_amount", "total_interest", "term_months", "status", "created_at", "approved_at", "repayments"]
 
         # Define fields as optional in extra_kwargs
         extra_kwargs = {
