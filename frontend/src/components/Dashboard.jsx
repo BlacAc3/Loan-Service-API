@@ -175,7 +175,7 @@ const Dashboard = () => {
         title: "Interest Rates",
         value: `${parseFloat(user.meanInterestRate).toLocaleString()}%`,
       },
-      { title: "Next Payment", value: "12" },
+      { title: "Next Payment", value: "..." },
     ];
   }
 
