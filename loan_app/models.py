@@ -79,8 +79,8 @@ class RepaymentSchedule(models.Model):
     repay_amount_with_interest=models.DecimalField(max_digits=10, decimal_places=2)
     end_of_month_due_amount = models.DecimalField(max_digits=10, decimal_places=2)
     expected_monthly_payment = models.DecimalField(max_digits=10, decimal_places=2)
-    due_date = models.DateTimeField(default=timezone.now() + relativedelta(months=1))
-    expiry_date = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateTimeField(null=False, default=(timezone.now() + relativedelta(months=1)))
+    expiry_date = models.DateTimeField( blank=True)
     remaining_months = models.PositiveIntegerField()
     total_months_for_payment = models.PositiveIntegerField()
 
@@ -88,6 +88,7 @@ class RepaymentSchedule(models.Model):
         return f"Repayment {self.pk} for Loan {self.loan.pk}"
 
     def update_repayment(self, amount:float):
+        #TODO: Remeber to implement and check the error caused by paying the exact amount being owed by the user
         try:
             #Make decrements
             new_total_due_amount = float(self.total_due_amount) - float(amount)
@@ -119,7 +120,6 @@ class RepaymentSchedule(models.Model):
             elif new_total_due_amount <= 0:
                 self.total_due_amount = 0
                 self.remaining_months = 0
-                self.due_date = None
                 self.end_of_month_due_amount = 0
                 self.loan.status = "paid"
 
