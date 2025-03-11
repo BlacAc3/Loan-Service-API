@@ -376,7 +376,8 @@ class GetUserProfile(APIView):
         except:
             mean_interest_rate = 0
         pending_loans=loans.filter(status="pending")
-        approved_loans=loans.filter(status="approved")
+        approved_loans = loans.filter(status="approved").order_by('-repayments__due_date')
+        next_payment = approved_loans.first().repayments.first().due_date if approved_loans.exists() else None
         rejected_loans =loans.filter(status="rejected")
         settled_loans = loans.filter(status="paid")
         # print(f"Total Approved Loans: {len(approved_loans)}")
@@ -412,7 +413,8 @@ class GetUserProfile(APIView):
             "pendingLoans":f"{pending_loans}",
             "approvedLoans":f"{approved_loans}",
             "rejectedLoans":f"{rejected_loans}",
-            "settledLoans":f"{settled_loans}"
+            "settledLoans":f"{settled_loans}",
+            "nextPayment": f"{next_payment.strftime('%B %d, %Y') if next_payment else None}",
         }
         return Response(data, status=status.HTTP_200_OK)
 

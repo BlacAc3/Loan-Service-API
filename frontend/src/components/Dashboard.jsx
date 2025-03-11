@@ -144,6 +144,7 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+  // console.log(user.due_date);
 
   let stats = [
     { title: "Total Loan Amount", value: "$21,000" },
@@ -175,7 +176,10 @@ const Dashboard = () => {
         title: "Interest Rates",
         value: `${parseFloat(user.meanInterestRate).toLocaleString()}%`,
       },
-      { title: "Next Payment", value: "..." },
+      {
+        title: "Next Payment",
+        value: `${user.nextPayment}`,
+      },
     ];
   }
 
@@ -241,6 +245,12 @@ const Dashboard = () => {
             >
               Rejected
             </Tabs.Trigger>
+            <Tabs.Trigger
+              value="paid"
+              className="px-3 py-2 w-full sm:w-1/3 transition-all duration-300 border border-transparent rounded-lg data-[state=active]:border-stone-500 data-[state=active]:bg-stone-950 mb-2 sm:mb-0"
+            >
+              Paid
+            </Tabs.Trigger>
           </Tabs.List>
 
           <Tabs.Content
@@ -262,14 +272,19 @@ const Dashboard = () => {
                         Loan Application ID: {loan.id}
                       </div>
                       <div className="text-gray-400">
-                        Applied on{" "}
-                        {new Date(loan.created_at).toLocaleDateString()}
+                        Next Payment on{" "}
+                        {loan.repayments[0].due_date
+                          ? new Date(
+                              loan.repayments[0].due_date,
+                            ).toLocaleDateString()
+                          : "N/A"}
                       </div>
                     </div>
                     <div
                       className={`rounded-3xl text-xs font-[500] cursor-pointer h-fit w-fit px-3 p-1 ${loan.status === "approved" ? "bg-green-200 text-green-800" : loan.status === "pending" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-800"}`}
                     >
-                      {loan.status}
+                      {loan.status.charAt(0).toUpperCase() +
+                        loan.status.slice(1)}
                     </div>
                   </Link>
                 ))
@@ -304,7 +319,44 @@ const Dashboard = () => {
                     <div
                       className={`rounded-3xl text-xs font-[500] cursor-pointer h-fit w-fit px-3 p-1 ${loan.status === "approved" ? "bg-green-200 text-green-800" : loan.status === "pending" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-800"}`}
                     >
-                      {loan.status}
+                      {loan.status.charAt(0).toUpperCase() +
+                        loan.status.slice(1)}
+                    </div>
+                  </div>
+                ))
+            ) : (
+              <div className="flex justify-center items-center border-t border-gray-700 py-2 px-4 text-gray-400">
+                No applications found.
+              </div>
+            )}
+          </Tabs.Content>
+          <Tabs.Content
+            value="paid"
+            className="overflow-x-auto overflow-y-scroll h-[50vh]"
+          >
+            {loans && loans.length > 0 ? (
+              loans
+                .slice(0, 50)
+                .filter((loan) => loan.status === "paid")
+                .map((loan, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center border-t border-gray-700 py-2 px-4 cursor-pointer"
+                  >
+                    <Link to={`/loan/${loan.id}`}>
+                      <div className="text-gray-200 font-bold">
+                        Loan Application ID: {loan.id}
+                      </div>
+                      <div className="text-gray-400">
+                        Applied on{" "}
+                        {new Date(loan.created_at).toLocaleDateString()}
+                      </div>
+                    </Link>
+                    <div
+                      className={`rounded-3xl text-xs font-[500] cursor-pointer h-fit w-fit px-3 p-1 ${loan.status === "approved" ? "bg-green-200 text-green-800" : loan.status === "pending" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-800"}`}
+                    >
+                      {loan.status.charAt(0).toUpperCase() +
+                        loan.status.slice(1)}
                     </div>
                   </div>
                 ))
@@ -341,42 +393,9 @@ const Dashboard = () => {
                       className={`rounded-3xl text-xs font-[500] cursor-pointer h-fit w-fit px-3 p-1 ${loan.status === "approved" ? "bg-green-200 text-green-800" : loan.status === "pending" ? "bg-yellow-200 text-yellow-800" : "bg-red-200 text-red-800"}`}
                       onClick={() => ApproveLoan(loan.id)}
                     >
-                      {loan.status}
+                      {loan.status.charAt(0).toUpperCase() +
+                        loan.status.slice(1)}
                     </div>
-                    {/* Start of Modal box */}
-                    {/* <Modal
-                      isOpen={modalIsOpen}
-                      onRequestClose={closeModal}
-                      contentLabel="Example Modal"
-                      className="bg-[#09090B] text-gray-300 flex items-center justify-center w-full h-full pt-16"
-                    >
-                      <div className="relative border border-stone-500 text-center p-12 rounded-lg">
-                        <h2 className="font-bold text-lg">
-                          Would you like to approve this loan?
-                        </h2>
-                        <button
-                          className="absolute top-0 right-0"
-                          onClick={closeModal}
-                        >
-                          Close Modal
-                        </button>
-                        <ul className="flex mt-6 justify-center text-black gap-8">
-                          <li
-                            onClick={() => ApproveLoan(loan.id)}
-                            className="cursor-pointer py-1 px-3 border-slate-300 rounded-lg bg-green-800 hover:bg-green-500 transition-all duration-400"
-                          >
-                            Approve
-                          </li>
-                          <li
-                            onClick={() => RejectLoan(loan.id)}
-                            className="cursor-pointer py-1 px-3 border-slate-300 rounded-lg bg-red-800 hover:bg-red-500 transition-all duration-400"
-                          >
-                            Reject
-                          </li>
-                        </ul>
-                      </div>
-                    </Modal> */}
-                    {/*  end of modal box code */}
                   </div>
                 ))
             ) : (

@@ -142,6 +142,18 @@ const LoanPage = () => {
             {loanDetails.term_months} months
           </p>
         </div>
+
+        <div className="border border-gray-700 rounded-lg p-5 hover:shadow-gray-400 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-sm">
+          <h2 className="text-base text-gray-400 m-0 mb-2.5">Next payment</h2>
+          <p className="text-3xl font-bold text-gray-100 m-0">
+            {repayment &&
+              new Date(repayment.due_date).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+          </p>
+        </div>
       </div>
 
       <section className="border border-gray-700 rounded-lg p-5 shadow-sm mb-6">
@@ -219,87 +231,6 @@ const LoanPage = () => {
               })}
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="border border-gray-700 rounded-lg p-5 shadow-sm">
-        <h2 className="text-lg text-gray-300 m-0 mb-5">Payment Schedule</h2>
-
-        <div className="overflow-x-auto overflow-y-scroll max-h-[300px]">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-stone-800">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Payment Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Amount
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Principal
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Interest
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-                >
-                  Balance
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-transparent divide-y divide-gray-700">
-              {/* You would normally map through payment schedule data here */}
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  Mar 1, 2023
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  ${repayment.repay_amount_with_interest}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $350.00
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $83.33
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $9,650.00
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  Apr 1, 2023
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  ${repayment.repay_amount_with_interest}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $353.00
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $80.42
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  $9,297.00
-                </td>
-              </tr>
-              {/* Add more rows as needed */}
-            </tbody>
-          </table>
         </div>
       </section>
     </div>

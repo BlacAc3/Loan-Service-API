@@ -78,7 +78,7 @@ const PaymentPage = ({ isAuthenticated }) => {
     if (
       !paymentAmount ||
       isNaN(parseFloat(paymentAmount)) ||
-      parseFloat(paymentAmount) < 1
+      parseFloat(paymentAmount) < 0
     ) {
       errors.paymentAmount = "Please enter a valid payment amount above $100";
     }
