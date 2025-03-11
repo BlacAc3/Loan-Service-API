@@ -98,7 +98,7 @@ class RepaymentSchedule(models.Model):
             months_paid_for = int((float(self.repay_amount_with_interest)-new_total_due_amount) / expected_monthly)
 
             # Calculate new remaining months
-            new_remaining_months = int(float(self.total_months_for_payment)) - months_paid_for
+            new_remaining_months = int(float(self.total_months_for_payment) - months_paid_for)
 
             # Calculate new due date
             due_date_obj = self.loan.approved_at
