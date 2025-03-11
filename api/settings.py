@@ -56,22 +56,23 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
 
-CORS_ALLOWED_ORIGINS = [
-"zloan.vercel.app",
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = (
+"http://zloan.vercel.app",
 "http://localhost:5173",
 "https://vercel.com/blacac3s-projects/zloan/Df2NebiHrC5A9WJJNhBsqXAQdUM6",
 "https://zloan-blacac3s-projects.vercel.app"
-]
+)
 
 TEMPLATES = [
     {
