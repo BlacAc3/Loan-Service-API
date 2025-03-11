@@ -65,7 +65,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8000/api/loans/${loan_id}/approve/`,
+        apiBaseUrl + `/api/loans/${loan_id}/approve/`,
         {
           method: "GET",
           headers: {
@@ -90,7 +90,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8000/api/loans/${loan_id}/reject/`,
+        apiBaseUrl + `/api/loans/${loan_id}/reject/`,
         {
           method: "GET",
           headers: {
