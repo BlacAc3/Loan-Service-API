@@ -80,7 +80,7 @@ class RepaymentSchedule(models.Model):
     repay_amount_with_interest=models.DecimalField(max_digits=10, decimal_places=2)
     end_of_month_due_amount = models.DecimalField(max_digits=10, decimal_places=2)
     expected_monthly_payment = models.DecimalField(max_digits=10, decimal_places=2)
-    due_date = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(default=timezone.now() + relativedelta(months=1))
     expiry_date = models.DateTimeField(null=True, blank=True)
     remaining_months = models.PositiveIntegerField()
     total_months_for_payment = models.PositiveIntegerField()
