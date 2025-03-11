@@ -54,7 +54,6 @@ class Loan(models.Model):
 
             # Calculate total amount with interest
             due_amount_with_interest = monthly_payment * int(self.term_months)
-            print(f"The months Remaining:->>{remainder_months}")
             new_repayment = RepaymentSchedule.objects.create(
                     loan=self,
                     repay_amount_with_interest=due_amount_with_interest,
