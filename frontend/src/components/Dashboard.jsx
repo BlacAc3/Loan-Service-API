@@ -55,11 +55,45 @@ const Dashboard = () => {
       } finally {
         makeChange(false);
         setLoading(false);
+        showNotification(
+          "Click the pending button to approve a loan!",
+          "success",
+        );
       }
     };
 
     fetchData();
   }, [change, apiBaseUrl]);
+  const showNotification = (message, type) => {
+    const notification = document.createElement("div");
+    notification.classList.add(
+      "fixed",
+      "top-4",
+      "left-1/2",
+      "transform",
+      "translate-x-[-50%]",
+      "p-2",
+      "rounded-lg",
+      "text-white",
+      "font-bold",
+      "z-50",
+      "transition-all",
+      "duration-500",
+    );
+    if (type === "success") {
+      notification.classList.add("bg-green-700");
+    } else {
+      notification.classList.add("bg-red-700");
+    }
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      notification.classList.add("opacity-0");
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 3000);
+  };
 
   const ApproveLoan = async (loan_id) => {
     try {
