@@ -20,6 +20,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         // Fetch loans and user data in parallel
         const [loansResponse, userResponse] = await Promise.all([
           fetch(apiBaseUrl + "/api/loans/", {
