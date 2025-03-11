@@ -67,7 +67,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'api.urls'
 
 CORS_ALLOWED_ORIGINS = [
-"https://zloan.vercel.app/",
+"zloan.vercel.app",
 "http://localhost:5173",
 "https://vercel.com/blacac3s-projects/zloan/Df2NebiHrC5A9WJJNhBsqXAQdUM6",
 "https://zloan-blacac3s-projects.vercel.app"
