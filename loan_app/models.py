@@ -105,7 +105,8 @@ class RepaymentSchedule(models.Model):
             # Ensure due_date_obj is aware of the timezone
             if isinstance(due_date_obj, datetime) and due_date_obj.tzinfo is None:
                 due_date_obj = timezone.make_aware(due_date_obj)
-            new_due_date = due_date_obj + relativedelta(months=math.ceil(months_paid_for))
+            new_due_date = due_date_obj + relativedelta(months=math.ceil(months_paid_for+1))
+            print(new_due_date)
 
             if new_total_due_amount > 0:
                 self.total_due_amount = new_total_due_amount
