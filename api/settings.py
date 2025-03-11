@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env( )
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DATABASE_URL=env('DATABASE_URL')
-DEBUG=env('DEBUG')
+DEBUG=True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -68,7 +68,7 @@ ROOT_URLCONF = 'api.urls'
 
 CORS_ALLOWED_ORIGINS = [
 "https://zloan.vercel.app",
-"http://localhost:5173",
+"http://localhost:5173"
 ]
 
 TEMPLATES = [
