@@ -117,22 +117,18 @@ class RepaymentSchedule(models.Model):
                 self.loan.status = "approved"
                 if self.expiry_date:
                     self.remaining_months = months_remaining(self.expiry_date, format="months")
-            elif new_total_due_amount <= 0:
+            elif new_total_due_amount == 0:
                 self.total_due_amount = 0
                 self.remaining_months = 0
                 self.end_of_month_due_amount = 0
                 self.loan.status = "paid"
-
-            # if new_total_due_amount <=0:
-            #     self.total_due_amount = 0
-            #     self.end_of_month_due_amount = 0
-            #     self.loan.status = "paid"
+            elif new_total_due_amount < 0:
+                raise ValueError("Payment amount exceeds the total due amount")
+            self.loan.save()
+            self.save()
 
         except Exception as e:
             raise e
-        #Calculate the remaining months
-        self.loan.save()
-        self.save()
 
 
 def months_remaining(from_date: datetime, format:str) -> int | None:
