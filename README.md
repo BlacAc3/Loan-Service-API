@@ -1,45 +1,63 @@
-Loan Management API
----
+# Loan Management API
 
 #### ***Description:***
-This Loan Management API is designed to handle loan applications, repayment schedules, and tracking for users. This API provides secure authentication via JWT, allows users to manage their loans, and enables administrators to oversee all transactions. The project showcases my expertise in API development, authentication, database design, and testing, along with best practices for scalability, security, and maintainability.
+This Loan Management API handles loan applications, repayment schedules, and tracking for users. The API provides secure authentication via JWT, allows users to manage their loans, and enables administrators to oversee transactions. The project demonstrates expertise in API development, authentication, database design, and follows best practices for scalability, security, and maintainability.
 
 #### ***Technologies Used:***
-- **Django REST Framework (DRF)**: For building the API.
-- **PostgreSQL**: As the primary relational database.
-- **Redis & Celery**: For caching and background tasks (e.g., processing loan approvals). <-------- Functionality Implementation Pending
-- **JWT Authentication**: To secure API endpoints.
-- **Swagger & OpenAPI**: For API documentation and visualization. 
-- **Docker**: For containerization and easy deployment. <-------- Functionality Implementation Pending
+- **Django REST Framework (DRF)**: For building the API endpoints
+- **PostgreSQL**: As the primary relational database
+- **JWT Authentication**: For securing API endpoints with token-based auth
+- **Swagger & OpenAPI**: For API documentation and visualization
+- **Python-dateutil**: For advanced date manipulation
+- **Django-environ**: For environment variable management
+- **Django CORS headers**: For cross-origin resource sharing
 
 #### ***Key Features:***
-1. **JWT Authentication & User Roles**: Secure access to endpoints based on user roles (e.g., Admin, Borrower).
-2. **Loan Application & Approval**: Users can apply for loans, and the system automatically generates a loan schedule. Admins approve or reject loan applications.
-3. **Loan Repayment Tracking**: Tracks repayments and updates loan balances.
-4. **Loan Schedules**: Automatically generate schedules using background tasks (Celery).
-5. **Error Handling**: Ensures smooth and secure API access.
-6. **Testing**: Comprehensive unit and integration testing using Django's test framework. <-------- Functionality Implementation Pending
-7. **Deployment**: Hosted using Docker and deployed on AWS with a CI/CD pipeline. <-------- Functionality Implementation Pending
-8. **API Versioning**: Ensures backward compatibility as new features are added.
+1. **JWT Authentication**: Secure endpoints with access and refresh tokens
+2. **User Management**: Register, login, and profile management
+3. **Loan Application & Lifecycle**: Apply, approve/reject, and track loans
+4. **Repayment Schedule**: Automatic generation of payment schedules with interest calculation
+5. **Loan Repayment Tracking**: Process payments and update loan balances
+6. **Role-Based Access Control**: Different permissions for regular users and admins
+7. **CORS Support**: Cross-origin resource sharing for frontend integration
 
-<br>
-<br>
+## API Endpoints
 
+### Authentication
+- **POST /api/auth/register/**: Register a new user
+- **POST /api/auth/login/**: User login with JWT token response
+- **POST /api/auth/logout/**: Logout and blacklist user token
+- **POST /api/token/refresh/**: Refresh an expired access token
+- **GET /api/auth/user/**: Get authenticated user's profile
+
+### Loans
+- **GET /api/loans/**: List all loans for the authenticated user
+- **POST /api/loans/**: Apply for a new loan
+- **GET /api/loans/{loan_id}/**: Get details of a specific loan
+- **GET /api/loans/{loan_id}/approve/**: Approve a loan (admin function)
+- **GET /api/loans/{loan_id}/reject/**: Reject a loan (admin function)
+- **GET /api/loans/{loan_id}/schedule/**: Get the repayment schedule for a loan
+
+### Repayments
+- **POST /api/repayments/{loan_id}/**: Make a repayment towards a loan
 
 ## Setup and Installation
 
+### Prerequisites
+- Python 3.8+
+- PostgreSQL database
+- Git
+
 ### Running with Docker
 Ensure you have Docker installed, if not follow their installation guide [Docker Installation](https://docs.docker.com/engine/install/)
-To run a Docker image and assign a custom name to the container, you can use the `--name` option in the `docker run` command.
 
 #### 1. Build Docker Image:
-
 ```bash
-docker build -t loan-service . 
+docker build -t loan-service .
 ```
 
 #### 2. Run Docker Image:
-The project will run in the background at `localhost:8000`, add the `-d` tag to run in the background. Replace ` --name loan-service ` with your preferred container name if the former is already in use, e.g. - ` --name loan-service2 `. 
+The project will run at `localhost:8000`, add the `-d` tag to run in the background.
 ```bash
 docker run --name loan-service -p 8000:8000 loan-service
 ```
@@ -53,122 +71,67 @@ docker ps
 ```bash
 docker exec -it loan-service python manage.py changepassword admin
 ```
-Replace `loan-service` with the container/image name used in `docker run`. Access the admin page at the URLs `http://127.0.0.1:8000/admin` or `localhost:8000/admin`
+Access the admin page at `http://127.0.0.1:8000/admin` or `localhost:8000/admin`
 - username: `admin`
 - password: `(Your set password from the above command)`
 
-#### 4. Stop Docker Image:
+#### 5. Stop Docker Image:
 ```bash
-docker stop loan-service 
+docker stop loan-service
 ```
-
-
-<br>
-<br>
 
 ### Manual Setup
 
-Ensure you have the following installed on your system:
-
-- Python (>= 3.8)
-- [PostgreSQL](https://www.postgresql.org/download/) (or any other supported database)
-- [Virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) for managing virtual environments
-- [Git](https://git-scm.com/) for version control
-
 #### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/BlacAc3/loan-api.git
 cd loan-api
 ```
 
 #### 2. Set Up Virtual Environment
-
-Create a virtual environment and activate it:
-
 ```bash
 python -m venv venv
 source venv/bin/activate   # On Windows: venv\Scripts\activate
 ```
 
 #### 3. Install Dependencies
-
-Install the required Python packages using `pip`:
-
 ```bash
 pip install -r requirements.txt
 ```
 
-
-#### 4. Configure Database
-
-Make sure PostgreSQL (or your chosen database) is installed and running. Create the database with the name specified in the `.env` file:
-
-```bash
-# Log into PostgreSQL
-psql -U your_db_user
-# Create a new database
-CREATE DATABASE your_db_name;
+#### 4. Create Environment File
+Create a `.env` file with the following variables:
+```
+SECRET_KEY=your_secret_key
+DATABASE_URL=postgres://username:password@localhost:5432/loan_db
 ```
 
 #### 5. Run Migrations
-
-Apply the database migrations to set up the database schema:
-
 ```bash
 python manage.py migrate
 ```
 
 #### 6. Create a Superuser (Admin)
-
-Create an admin user to access the Django admin panel `http://127.0.0.1:8000/admin` or `localhost:8000/admin` after running the server:
-
 ```bash
 python manage.py createsuperuser
 ```
 
 #### 7. Run the Development Server
-
-Now that everything is set up, you can run the development server:
-
 ```bash
 python manage.py runserver
 ```
 
-To see the project, open your browser and visit `http://127.0.0.1:8000/` or `localhost:8000`.
-
-<br>
-<br>
-
+Access the API at `http://127.0.0.1:8000/` or `localhost:8000`.
 
 ## Running Tests
-
-To run the automated tests for the application, execute the following command:
-
 ```bash
 python manage.py test
 ```
-<br>
-<br>
 
 ## API Documentation
-
-### **Endpoints documentation**
-The full documentation of all working API endpoints provided: 
-[API Endpoints Documentation](endpoints.md)
-
-
-### **OpenAPI Specification (for SwaggerHub)**
-
-Here’s a starting point for the OpenAPI specification. This is what you will upload to SwaggerHub for API visualization: 
-- [OpenAPI YAML file](openapi.yaml) (Database schema included)
+For detailed API documentation, please refer to:
+- [OpenAPI YAML file](docs/loan_app.yaml)
 - [SwaggerHub API Visualization](https://app.swaggerhub.com/apis/ACEEZEALA/Ace_Loan/1.0.0)
 
-<br>
-<br>
-
-
 ## License
-
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
