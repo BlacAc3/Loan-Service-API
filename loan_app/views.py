@@ -427,3 +427,9 @@ class GetAllUsers(APIView):
             data.append(user_info)
 
         return Response(data, status=status.HTTP_200_OK)
+
+class PingSupabaseView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self, request):
+        User.objects.all()
+        return Response({"message": "pong"}, status=status.HTTP_200_OK)
