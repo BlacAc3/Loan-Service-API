@@ -68,6 +68,7 @@ ROOT_URLCONF = 'api.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "*",
+    "https://n8n-service-sfwl.onrender.com",
 "https://zloan.vercel.app",
 "http://localhost:5173",
 "https://zloan-blacac3s-projects.vercel.app"
