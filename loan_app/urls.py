@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from . import views
-from loan_app.views import PingView
+from loan_app.views import PingSupabaseView
 
 base_url = "v1/"
 
