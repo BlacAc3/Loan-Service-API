@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from . import views
+from loan_app.views import PingView
 
 base_url = "v1/"
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path("api/repayments/<int:loan_id>/", views.RepayLoan.as_view(), name="repay"),
     path("api/loans/<int:loan_id>/schedule/", views.RepaymentDetails.as_view(), name="schedule"),
     path("api/auth/user/", views.GetUserProfile.as_view(), name="get_profile"),
+    path("api/ping/supabase/", views.PingSupabaseView.as_view(), name="ping"),
 ]
